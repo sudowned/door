@@ -1,0 +1,26 @@
+{
+  "name": "door",
+  "version": "1.0.0",
+  "description": "A door to another world...",
+  "main": "door.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "babel-node door.js"
+  },
+  "author": "Winfield Trail",
+  "license": "Not licensed for distribution",
+  "dependencies": {
+    "babel-core": "^6.22.1",
+    "babel-plugin-transform-async-to-generator": "^6.22.0",
+    "babel-polyfill": "^6.22.0",
+    "babel-preset-env": "^1.1.8",
+    "babel-register": "^6.22.0",
+    "bluebird": "^3.4.7",
+    "konsole.table": "^0.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.1"
+  }
+}

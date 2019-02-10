@@ -2,6 +2,7 @@ import substances from './substances';
 
 const cellDefaults = {
     material: substances.air,
+    nodes: [],
 };
 
 function getWidth(){
@@ -14,6 +15,20 @@ function getLength(){
 
 function getHeight(){
     return this.cells[0][0].length;
+}
+
+// Finds the z coordinate of the first cell in a column which can be considered
+// a "surface". This is most commonly used to find the highest non-air cell upon
+// which to anchor a node. By adding water to the excludeMaterials list, it can
+// be made to find riverbed surfaces, etc. as well.
+function getSurfaceHeight(x, y, excludeMaterials = [substances.air]) {
+    const mapHeight = this.getHeight();
+    for (let z = mapHeight; z >= 0; z--) {
+        const c = this.getCell(x,y,z);
+        if (excludeMaterials.indexOf(c.material.name) > -1) return z;
+    }
+
+    return -1;
 }
 
 // Generates a cell's data. Right now that doesn't mean very much, but at some
@@ -69,9 +84,14 @@ export const createSpace = function(width, length, height){
         initialized: 0,
         cells,
     };
-    container.getHeight = getHeight.bind(container);
-    container.getLength = getLength.bind(container);
-    container.getWidth = getWidth.bind(container);
+
+
+    [ // Create map-scoped utility functions
+        getHeight,
+        getWidth,
+        getLength,
+        getSurfaceHeight,
+    ].forEach(f => container[f.name] = f.bind(container));
 
     return container;
 }

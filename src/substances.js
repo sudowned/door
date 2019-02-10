@@ -45,6 +45,7 @@ const dirt = {
 };
 
 export default {
+    VOID,
     air,
     granite,
     dirt,

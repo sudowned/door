@@ -25,6 +25,7 @@ const DIRECTIONS = {
 export const NODE_TYPES = {
     ..._c('ROOM'),
     ..._c('OBJECT'),
+    ..._c('PORTAL'),
 };
 
 export const NODE_FAMILIES = {
@@ -53,6 +54,8 @@ const createFace = function(params){
 }
 
 export function addNode(node){
+    if (node.parents.length == 0) node.defaultPortal = this;
+    node.parents.push(this);
     this.nodes.push(node);
     return node;
 }
@@ -70,6 +73,8 @@ const nodeDefaults = {
     type: null,
     family: null,
     name: UNNAMED_NODE,
+    parents: [],
+    defaultPortal: null,
     dimensions: { // dimensions is in inches
         length: 0,
         width: 0,

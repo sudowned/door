@@ -37,6 +37,7 @@ const granite = {
 };
 
 const dirt = {
+    ...VOID,
     name: 'dirt',
     density: 50,
     hardness: 30,

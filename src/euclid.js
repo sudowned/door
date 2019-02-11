@@ -1,4 +1,5 @@
 import substances from './substances';
+import { addNode } from './nodes';
 
 const cellDefaults = {
     material: substances.air,
@@ -23,9 +24,11 @@ function getHeight(){
 // be made to find riverbed surfaces, etc. as well.
 function getSurfaceHeight(x, y, excludeMaterials = [substances.air]) {
     const mapHeight = this.getHeight();
-    for (let z = mapHeight; z >= 0; z--) {
+    for (let z = mapHeight-1; z >= 0; z--) {
         const c = this.getCell(x,y,z);
-        if (excludeMaterials.indexOf(c.material.name) > -1) return z;
+        if ((excludeMaterials.map(a => a.name)).indexOf(c.material.name) > -1) continue;
+
+        return z;
     }
 
     return -1;
@@ -41,7 +44,7 @@ export const createCell = function(metadata){
     );
     delete(metadata.position);
 
-    return {
+    const cell = {
         ...cellDefaults,
         ...metadata,
         // It's vital that we be able to identify this cell at any time, so we
@@ -50,6 +53,10 @@ export const createCell = function(metadata){
         // otherwise accessed, preventing overwrite.
         getPosition: function(){ return {...position}; }
     };
+
+    cell.addNode = addNode.bind(cell);
+
+    return cell;
 }
 
 // Creates a euclidean space with X/Y/Z coordinates suitable for generating
@@ -73,7 +80,8 @@ export const createSpace = function(width, length, height){
         };
     };
 
-    function getCell(x,y,z){
+    function getCell(x,y,z = -1){
+        if (z < 0) z = this.getSurfaceHeight(x,y);
         return cells[x][y][z];
     }
 

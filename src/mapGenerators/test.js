@@ -3,7 +3,7 @@ import substances from '../substances';
 
 function generate(srcSpace){
     let space = _.cloneDeep(srcSpace);
-    
+
     const height = space.getHeight();
     const landHeight = Math.floor(height / 3) + 1;
 

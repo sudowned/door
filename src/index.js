@@ -1,6 +1,7 @@
 import euclid from './euclid';
 import node from './nodes';
-import test from './mapGenerators/test'
+import test from './mapGenerators/test';
+import substances from './substances';
 
 export const run = async function(){
 
@@ -14,12 +15,38 @@ export const run = async function(){
         console.log(testWorld.getCell(50,50,i).material.name);
     
     // now let's pick a spot on the surface and put a house there.
-    testWorld.getCell(50,50).addNode(node.createNode({
+    const house = testWorld.getCell(50,50).addNode(node.createNode({
         type: node.NODE_TYPES.OBJECT,
         family: node.NODE_FAMILIES.STRUCTURE,
         name: "curious house",
     }));
 
+    const houseInterior = house.addNode({// add an inside node as well
+        type: node.NODE_TYPES.ROOM,
+        name: "curious house interior",
+    })
+
+    const portals = node.createPortal({
+        from: {
+            node: houseInterior.faces[node.DIRECTIONS.NORTH],
+            face: {
+                type: node.NODE_TYPES.OBJECT,
+                name: "weathered painted door",
+                material: substances.oakPlanks,
+            },
+        },
+        to: {
+            node: house.faces[node.DIRECTIONS.NORTH],
+            face: {
+                type: node.NODE_TYPES.OBJECT,
+                name: "weathered wooden door",
+                material: substances.oakPlanks,
+            },
+        }
+    });
     // let's see what this made
-    console.log(JSON.stringify(testWorld.getCell(50,50)));
+    //console.log(testWorld.stringify());
+
+    console.log(house.stringify());
+    console.log(house.faces.NORTH.nodes[0].traversePortal());
 }

@@ -45,9 +45,29 @@ const dirt = {
     phase: PHASES.SOLID,
 };
 
+const oak = {
+    ...VOID,
+    name: 'oak',
+    density: 65,
+    hardness: 45,
+    fragmentation: 0,
+    porosity: 30,
+    phase: PHASES.SOLID,
+};
+
+const oakPlanks = {
+    ...oak,
+    name: 'oakPlanks',
+    fragmentation: 20,
+    density: 62,
+}
+
+
 export default {
     VOID,
     air,
     granite,
     dirt,
+    oak,
+    oakPlanks,
 }

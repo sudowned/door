@@ -1,5 +1,6 @@
 import substances from './substances';
 import { addNode } from './nodes';
+import { stringify } from './util';
 
 const cellDefaults = {
     material: substances.air,
@@ -54,7 +55,10 @@ export const createCell = function(metadata){
         getPosition: function(){ return {...position}; }
     };
 
-    cell.addNode = addNode.bind(cell);
+    [
+        addNode,
+        stringify,
+    ].forEach(f => cell[f.name] = f.bind(cell));
 
     return cell;
 }
@@ -99,6 +103,7 @@ export const createSpace = function(width, length, height){
         getWidth,
         getLength,
         getSurfaceHeight,
+        stringify,
     ].forEach(f => container[f.name] = f.bind(container));
 
     return container;

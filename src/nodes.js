@@ -10,6 +10,7 @@ function _c(t) {
     r[t] = t;
     return r;
 }
+
 export const DIRECTIONS = {
     ..._c('NORTH'),
     ..._c('NORTHEAST'),
@@ -23,20 +24,32 @@ export const DIRECTIONS = {
     ..._c('DOWN'),
 };
 
-export const NODE_TYPES = {
+export const SHAPES = {
+    CUBE: {
+        [DIRECTIONS.NORTH]: null,
+        [DIRECTIONS.EAST]: null,
+        [DIRECTIONS.SOUTH]: null,
+        [DIRECTIONS.WEST]: null,
+        [DIRECTIONS.UP]: null,
+        [DIRECTIONS.DOWN]: null,
+    },
+};
+
+export const TYPES = {
     ..._c('ROOM'),
     ..._c('OBJECT'),
     ..._c('FACE'),
     ..._c('PORTAL'),
 };
 
-export const NODE_FAMILIES = {
+export const FAMILIES = {
     ..._c('STRUCTURE'),
     ..._c('SURFACE'),
     ..._c('CONTAINER'),
 };
 
-const UNNAMED_NODE = "a shapeless idea";
+const UNNAMED_NODE = "shapeless idea";
+const UNDESCRIBED_NODE = "without any notion of self";
 
 const createNodeId = function(){
     const id = uuidv1();
@@ -50,7 +63,7 @@ const createNodeId = function(){
 export const createPortal = function(input) {
     const { from, to } = input;
     const portal = createNode({
-        type: NODE_TYPES.PORTAL,
+        type: TYPES.PORTAL,
         // After we create the portal, it ceases to have a "from" and "to" side.
         // Conceptually this is only useful at creation.
         parents: [from.node, to.node],
@@ -92,22 +105,51 @@ export function addNode(node){
     return node;
 }
 
+// Attaches an entity to the bound node. Handles deregistration of previous
+// node for you. Useless without being bound.
+export function addEntity(entity){
+    if (e.nodeRef) {
+        // TODO: log this to some kind of dev exception stream instead of
+        // barfing it out into the player stream
+        if (!e.nodeRef[e.id]) console.warn(
+            `Attempted to deregister unknown entity ${e.id} from node ${e.nodeRef.id}.`)
+        delete e.nodeRef[e.id];
+
+        e.nodeRef = this;
+    }
+}
+
+// TODO: figure out when we want to call it "a" vs. "the", etc
+function describe(increment=true, forceFullDescribe=false){
+    let phrase = `a ${this.name}`;
+    if (this.describedCount > 0 || forceFullDescribe)
+        phrase = [phrase, this.description].join(', ');
+
+    if (increment) this.describedCount++;
+    return phrase;
+}
+
+function changeDescription(name=false, description=false, resetDescribedCount = true){
+    if ((name || description) && resetDescribedCount) this.describedCount = 0;
+    if (name) this.name = name;
+    if (description) this.description = description;
+
+    // return current node for further chaining
+    return this;
+}
+
 const nodeDefaults = {
     id: null,
-    faces: {
-        // TODO: teach each face what node it belongs to
-        // and what face it is
-        [DIRECTIONS.NORTH]: null,
-        [DIRECTIONS.EAST]: null,
-        [DIRECTIONS.SOUTH]: null,
-        [DIRECTIONS.WEST]: null,
-        [DIRECTIONS.UP]: null,
-        [DIRECTIONS.DOWN]: null,
-    },
+    faces: {},
     type: null,
     family: null,
     name: UNNAMED_NODE,
+    description: UNDESCRIBED_NODE,
+    material: null,
+    describedCount: 0,
+    transparent: true,
     parents: [],
+    entities: [],
     defaultPortal: null,
     dimensions: { // dimensions is in inches
         length: 0,
@@ -115,7 +157,7 @@ const nodeDefaults = {
         height: 0,
     },
 
-    nodes: [],
+    nodes: {},
 };
 
 export const createNode = function(params, subnode = false){
@@ -130,13 +172,16 @@ export const createNode = function(params, subnode = false){
 
     [
         addNode,
+        addEntity,
         stringify,
+        describe,
+        changeDescription,
     ].forEach(f => node[f.name] = f.bind(node));
 
     if (!subnode && Object.keys(node.faces).length > 0) {
         Object.keys(node.faces).forEach(direction => {
             node.faces[direction] = createNode({
-                type: NODE_TYPES.FACE,
+                type: TYPES.FACE,
                 parents: [ node ],
             }, true);
         });
@@ -151,7 +196,8 @@ export const createNode = function(params, subnode = false){
 export default {
     createNode,
     createPortal,
-    NODE_TYPES,
-    NODE_FAMILIES,
+    TYPES,
+    FAMILIES,
     DIRECTIONS,
+    SHAPES,
 };

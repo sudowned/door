@@ -8,7 +8,7 @@ export const run = async function(){
     // create a simple space and fill it. the TEST map generator creates
     // a featureless expanse with the bottom 1/3 made of granite, one layer
     // of soil, and the rest is air.
-    const testWorld = test.generate(euclid.createSpace(100, 100, 30));
+    const testWorld = test.generate(euclid.createSpace(200, 200, 5));
 
     // let's look at a column of cells and see what the composition of each is
     for (let i = testWorld.getHeight()-1; i > -1; i--)
@@ -16,13 +16,15 @@ export const run = async function(){
     
     // now let's pick a spot on the surface and put a house there.
     const house = testWorld.getCell(50,50).addNode(node.createNode({
-        type: node.NODE_TYPES.OBJECT,
-        family: node.NODE_FAMILIES.STRUCTURE,
+        type: node.TYPES.OBJECT,
+        faces: node.SHAPES.CUBE,
+        family: node.FAMILIES.STRUCTURE,
         name: "curious house",
     }));
 
     const houseInterior = house.addNode({// add an inside node as well
-        type: node.NODE_TYPES.ROOM,
+        type: node.TYPES.ROOM,
+        faces: node.SHAPES.CUBE,
         name: "curious house interior",
     })
 
@@ -30,7 +32,7 @@ export const run = async function(){
         from: {
             node: houseInterior.faces[node.DIRECTIONS.NORTH],
             face: {
-                type: node.NODE_TYPES.OBJECT,
+                type: node.TYPES.OBJECT,
                 name: "weathered painted door",
                 material: substances.oakPlanks,
             },
@@ -38,7 +40,7 @@ export const run = async function(){
         to: {
             node: house.faces[node.DIRECTIONS.NORTH],
             face: {
-                type: node.NODE_TYPES.OBJECT,
+                type: node.TYPES.OBJECT,
                 name: "weathered wooden door",
                 material: substances.oakPlanks,
             },

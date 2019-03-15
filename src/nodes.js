@@ -107,7 +107,7 @@ export function addNode(node){
 
 // Attaches an entity to the bound node. Handles deregistration of previous
 // node for you. Useless without being bound.
-export function addEntity(entity){
+export function addEntity(e){
     if (e.nodeRef) {
         // TODO: log this to some kind of dev exception stream instead of
         // barfing it out into the player stream
@@ -117,6 +117,11 @@ export function addEntity(entity){
 
         e.nodeRef = this;
     }
+
+    this.entities[e.id] = e;
+
+    // return node for chaining
+    return this;
 }
 
 // TODO: figure out when we want to call it "a" vs. "the", etc
@@ -148,8 +153,6 @@ const nodeDefaults = {
     material: null,
     describedCount: 0,
     transparent: true,
-    parents: [],
-    entities: [],
     defaultPortal: null,
     dimensions: { // dimensions is in inches
         length: 0,
@@ -157,7 +160,9 @@ const nodeDefaults = {
         height: 0,
     },
 
-    nodes: {},
+    parents: [],
+    entities: {},
+    nodes: [],
 };
 
 export const createNode = function(params, subnode = false){

@@ -1,8 +1,11 @@
+'use strict';
 import euclid from './euclid';
 import node from './nodes';
 import test from './mapGenerators/test';
 import entity from './entities';
 import substances from './substances';
+
+import inquirer from 'inquirer';
 
 export const run = async function(){
 
@@ -16,37 +19,8 @@ export const run = async function(){
         console.log(testWorld.getCell(50,50,i).material.name);
 
     // now let's pick a spot on the surface and put a house there.
-    const house = testWorld.getCell(50,50).addNode(node.createNode({
-        type: node.TYPES.OBJECT,
-        faces: node.SHAPES.CUBE,
-        family: node.FAMILIES.STRUCTURE,
-        name: "curious house",
-    }));
+    const house = testWorld.getCell(50,50).addNode();
 
-    const houseInterior = house.addNode({// add an inside node as well
-        type: node.TYPES.ROOM,
-        faces: node.SHAPES.CUBE,
-        name: "curious house interior",
-    })
-
-    const portals = node.createPortal({
-        from: {
-            node: houseInterior.faces[node.DIRECTIONS.NORTH],
-            face: {
-                type: node.TYPES.OBJECT,
-                name: "weathered painted door",
-                material: substances.oakPlanks,
-            },
-        },
-        to: {
-            node: house.faces[node.DIRECTIONS.NORTH],
-            face: {
-                type: node.TYPES.OBJECT,
-                name: "weathered wooden door",
-                material: substances.oakPlanks,
-            },
-        }
-    });
     // let's see what this made
     //console.log(testWorld.stringify());
 
@@ -62,5 +36,7 @@ export const run = async function(){
 
     houseInterior.addEntity(miserableMan);
 
-    console.log(house.stringify());
+    //console.log(house.stringify());
+
+    
 }

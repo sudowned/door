@@ -159,7 +159,7 @@ const nodeDefaults = {
         width: 0,
         height: 0,
     },
-
+    handles: {}, // useful points of reference to subnodes
     parents: [],
     entities: {},
     nodes: [],
